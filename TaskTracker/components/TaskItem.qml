@@ -33,8 +33,17 @@ Rectangle {
             font.pixelSize: 10
             color: "blue"
         }
-    }
 
+        Button {
+            text: "Удалить"
+            anchors.right: parent.right
+            anchors.bottom: parent.botton
+            onClicked: {
+                taskItem.requestDelete(index)
+            }
+        }
+    }
+    signal requestDelete(int row)
     MouseArea {
         anchors.fill: parent
         onClicked: {

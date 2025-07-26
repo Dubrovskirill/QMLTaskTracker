@@ -75,6 +75,9 @@ ApplicationWindow {
                     console.log("Клик по задаче из main.qml:", taskName)
                     // Здесь можно добавить логику для редактирования задачи
                 }
+                onRequestDelete: {
+                           taskModel.removeTask(row)
+                       }
             }
         }
     }
