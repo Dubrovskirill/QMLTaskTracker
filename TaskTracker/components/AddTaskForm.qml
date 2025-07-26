@@ -12,6 +12,7 @@ Rectangle {
 
     // Сигнал для добавления задачи
     signal addTask(string name, string description, int priority)
+    signal cancel()
 
     ColumnLayout {
         anchors.fill: parent
@@ -67,7 +68,7 @@ Rectangle {
                 text: "Отмена"
                 Layout.fillWidth: true
                 onClicked: {
-                    addTaskForm.visible = false
+                    addTaskForm.cancel()
                 }
             }
         }

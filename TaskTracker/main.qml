@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
+import "components"
 
 ApplicationWindow {
     id: window
@@ -30,74 +31,48 @@ ApplicationWindow {
         }
     }
 
+    property bool showAddForm: false
+
     // Главный контейнер
     Column {
         anchors.fill: parent
         anchors.margins: 10
 
-        // Заголовок
-        Rectangle {
-            width: parent.width
-            height: 60
-            color: "lightblue"
 
-            Text {
-                anchors.centerIn: parent
-                text: "Task Tracker"
-                font.pixelSize: 24
-                font.bold: true
-            }
+        Header {
+            width: parent.width
         }
 
-        // Кнопка добавления тестовых задач
+
         Button {
             width: parent.width
             height: 50
-            text: "Добавить тестовые задачи"
+            text: "Добавить задачу"
+            onClicked: showAddForm = true
 
         }
 
-        // Список задач
+        AddTaskForm {
+            width: parent.width
+            visible: showAddForm
+            onAddTask: {
+                // Добавляем задачу через TaskModel
+                taskModel.addTaskFromStrings(name, description, priority)
+                showAddForm = false
+            }
+            onCancel: showAddForm = false
+        }
+
         ListView {
             width: parent.width
             height: parent.height - 120 // вычитаем заголовок и кнопку
             model: taskModel
 
-            delegate: Rectangle {
-                width: parent.width
-                height: 80
-                color: index % 2 === 0 ? "lightgray" : "white"
-                border.color: "gray"
-                border.width: 1
-
-                Column {
-                    anchors.fill: parent
-                    anchors.margins: 10
-
-                    Text {
-                        text: model.name
-                        font.pixelSize: 16
-                        font.bold: true
-                    }
-
-                    Text {
-                        text: model.description
-                        font.pixelSize: 12
-                        color: "gray"
-                    }
-
-                    Text {
-                        text: "Приоритет: " + model.priority
-                        font.pixelSize: 10
-                        color: "blue"
-                    }
-                }
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        console.log("Клик по задаче:", model.name)
-                    }
+            delegate: TaskItem {
+                // Подключаем сигнал clicked
+                onClicked: function(taskName) {
+                    console.log("Клик по задаче из main.qml:", taskName)
+                    // Здесь можно добавить логику для редактирования задачи
                 }
             }
         }
