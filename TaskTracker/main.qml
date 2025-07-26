@@ -14,6 +14,10 @@ ApplicationWindow {
     visible: true
     title: "Task Tracker"
 
+    property bool showTaskForm: false
+    property int editingTaskIndex: -1
+    property string formMode: "add"  // "add" или "edit"
+
     Component.onCompleted: {
         console.log("ApplicationWindow completed")
         console.log("Platform:", Qt.platform.os)
@@ -31,55 +35,75 @@ ApplicationWindow {
         }
     }
 
-    property bool showAddForm: false
-
-    // Главный контейнер
     Column {
         anchors.fill: parent
         anchors.margins: 10
-
 
         Header {
             width: parent.width
         }
 
-
         Button {
             width: parent.width
             height: 50
             text: "Добавить задачу"
-            onClicked: showAddForm = true
-
+            onClicked: {
+                formMode = "add"
+                taskForm.taskName = ""
+                taskForm.taskDescription = ""
+                taskForm.taskPriority = 1
+                showTaskForm = true
+            }
         }
 
         AddTaskForm {
+            id: taskForm
             width: parent.width
-            visible: showAddForm
-            z:10
+            visible: showTaskForm
+            mode: formMode
+
             onAddTask: {
-                // Добавляем задачу через TaskModel
-                taskModel.addTaskFromStrings(name, description, priority)
-                showAddForm = false
+                if (mode === "add") {
+                    taskModel.addTaskFromStrings(name, description, priority)
+                } else if (mode === "edit") {
+                    taskModel.updateTask(editingTaskIndex, name, description, priority)
+                }
+                showTaskForm = false
+                editingTaskIndex = -1
+                formMode = "add"
             }
-            onCancel: showAddForm = false
+
+            onCancel: {
+                showTaskForm = false
+                editingTaskIndex = -1
+                formMode = "add"
+            }
         }
 
         ListView {
             width: parent.width
-            height: parent.height - 120 // вычитаем заголовок и кнопку
+            height: parent.height - 120
             model: taskModel
 
             delegate: TaskItem {
-                // Подключаем сигнал clicked
-                onClicked: function(taskName) {
-                    console.log("Клик по задаче из main.qml:", taskName)
-                    // Здесь можно добавить логику для редактирования задачи
+                onClicked: {
+                    console.log("Клик по задаче:", taskName, "Индекс:", index)
+                    editingTaskIndex = index
+                    var task = taskModel.getTask(index)
+                    if (task) {
+                        formMode = "edit"
+                        taskForm.taskName = task.name
+                        taskForm.taskDescription = task.description
+                        taskForm.taskPriority = task.priority
+                        showTaskForm = true
+                    } else {
+                        console.warn("Задача не найдена по индексу:", index)
+                    }
                 }
                 onRequestDelete: {
-                           taskModel.removeTask(row)
-                       }
+                    taskModel.removeTask(index)
+                }
             }
         }
     }
 }
-

@@ -32,9 +32,10 @@ public:
 
     Q_INVOKABLE void addTask(const Task &task);
     Q_INVOKABLE void removeTask(int row);
-    Q_INVOKABLE Task* getTask(int row) const;
+    Q_INVOKABLE QVariant getTask(int row) const;
     Q_INVOKABLE void clear();
     Q_INVOKABLE void addTaskFromStrings(const QString &name, const QString &description, int priority);
+    Q_INVOKABLE void updateTask(int index, const QString &name, const QString &description, int priority);
 
 
     QList<Task*> getTasks() const;

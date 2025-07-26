@@ -81,11 +81,23 @@ void TaskModel::removeTask(int row)
     endRemoveRows();
 }
 
-Task* TaskModel::getTask(int row) const
+QVariant TaskModel::getTask(int row) const
 {
     if (row < 0 || row >= m_tasks.size())
-        return nullptr;
-    return m_tasks.at(row);
+        return QVariant();
+
+    Task *task = m_tasks.at(row);
+    QVariantMap taskData;
+    taskData["id"] = task->getId();
+    taskData["name"] = task->getName();
+    taskData["description"] = task->getDescription();
+    taskData["priority"] = task->getPriority();
+    taskData["dueDate"] = task->getDueDate();
+    taskData["isCompleted"] = task->isCompleted();
+    taskData["createdAt"] = task->getCreatedAt();
+    taskData["updatedAt"] = task->getUpdatedAt();
+
+    return taskData;
 }
 
 void TaskModel::clear()
@@ -110,4 +122,15 @@ void TaskModel::addTaskFromStrings(const QString &name, const QString &descripti
     task.setDescription(description);
     task.setPriority(priority);
     addTask(task); // используем уже существующий метод
+}
+
+void TaskModel::updateTask(int index, const QString &name, const QString &description, int priority)
+{
+    if (index < 0 || index >= m_tasks.size())
+        return;
+    Task* task = m_tasks.at(index);
+    task->setName(name);
+    task->setDescription(description);
+    task->setPriority(priority);
+    emit dataChanged(this->index(index), this->index(index));
 }
