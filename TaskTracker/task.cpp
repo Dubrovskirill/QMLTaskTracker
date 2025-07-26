@@ -83,3 +83,69 @@ QDateTime Task::getUpdatedAt() const
 {
     return m_updatedAt;
 }
+
+// Сеттеры
+void Task::setId(int id)
+{
+    if (m_id != id) {
+        m_id = id;
+        emit idChanged();
+    }
+}
+
+void Task::setName(const QString &name)
+{
+    if (m_name != name) {
+        m_name = name;
+        emit nameChanged();
+    }
+}
+
+void Task::setDescription(const QString &description)
+{
+    if (m_description != description) {
+        m_description = description;
+        emit descriptionChanged();
+    }
+}
+
+void Task::setDueDate(const QDateTime &dueDate)
+{
+    if (m_dueDate != dueDate) {
+        m_dueDate = dueDate;
+        emit dueDateChanged();
+    }
+}
+
+void Task::setIsCompleted(bool isCompleted)
+{
+    if (m_isCompleted != isCompleted) {
+        m_isCompleted = isCompleted;
+        emit isCompletedChanged();
+    }
+}
+
+void Task::setPriority(int priority)
+{
+    if (m_priority != priority) {
+        m_priority = priority;
+        emit priorityChanged();
+    }
+}
+
+void Task::setCreatedAt(const QDateTime &createdAt)
+{
+    if (m_createdAt != createdAt) {
+        m_createdAt = createdAt;
+        emit createdAtChanged();
+    }
+}
+
+void Task::setUpdatedAt(const QDateTime &updatedAt)
+{
+    if (m_updatedAt != updatedAt) {
+        m_updatedAt = updatedAt;
+        emit updatedAtChanged();
+    }
+}
+
