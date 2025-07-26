@@ -3,7 +3,7 @@ import QtQuick.Controls 2.15
 
 Rectangle {
     id: taskItem
-    width: parent.width
+    width: parent ? parent.width : 0
     height: 80
     color: index % 2 === 0 ? "lightgray" : "white"
     border.color: "gray"
