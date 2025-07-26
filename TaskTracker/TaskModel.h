@@ -36,7 +36,7 @@ public:
     Q_INVOKABLE void clear();
 
 
-    QList<Task*> tasks() const;
+    QList<Task*> getTasks() const;
 
 private:
     QList<Task*> m_tasks;

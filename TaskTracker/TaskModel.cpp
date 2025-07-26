@@ -99,3 +99,7 @@ void TaskModel::clear()
     endResetModel();
 }
 
+QList<Task*> TaskModel::getTasks() const
+{
+    return m_tasks;
+}
