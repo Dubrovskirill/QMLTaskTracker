@@ -34,6 +34,7 @@ public:
     Q_INVOKABLE void removeTask(int row);
     Q_INVOKABLE Task* getTask(int row) const;
     Q_INVOKABLE void clear();
+    Q_INVOKABLE void addTaskFromStrings(const QString &name, const QString &description, int priority);
 
 
     QList<Task*> getTasks() const;

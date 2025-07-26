@@ -103,3 +103,11 @@ QList<Task*> TaskModel::getTasks() const
 {
     return m_tasks;
 }
+
+void TaskModel::addTaskFromStrings(const QString &name, const QString &description, int priority)
+{
+    Task task(name);
+    task.setDescription(description);
+    task.setPriority(priority);
+    addTask(task); // используем уже существующий метод
+}
