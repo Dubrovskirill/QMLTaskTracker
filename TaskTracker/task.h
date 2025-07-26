@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QString>
 #include <QDateTime>
+#include <QDebug>
 
 class Task: public QObject
 {
