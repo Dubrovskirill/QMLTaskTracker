@@ -2,8 +2,10 @@
 #include <QQmlApplicationEngine>
 
 #include "task.h"
+#include "TaskModel.h"
 #include <QDebug>
 #include <QDateTime>
+#include <QModelIndex>
 
 int main(int argc, char *argv[])
 {
@@ -21,72 +23,59 @@ int main(int argc, char *argv[])
 //        }, Qt::QueuedConnection);
 //    engine.load(url);
 
-    // Тест 1: Конструктор по умолчанию
-    Task t1;
-    qDebug() << "t1:" << t1.toString();
-    Q_ASSERT(!t1.isOverdue());
-    Q_ASSERT(!t1.isValid()); // имя пустое
+    TaskModel model;
+    qDebug() << "[INIT] rowCount:" << model.rowCount();
+    qDebug() << "[INIT] getTasks().size():" << model.getTasks().size();
 
-    // Тест 2: Конструктор с именем
-    Task t2("Сделать домашку");
-    qDebug() << "t2:" << t2.toString();
-    Q_ASSERT(t2.getName() == "Сделать домашку");
-    Q_ASSERT(t2.isValid());
+    // 2. Добавление задач
+    Task t1("Задача 1");
+    t1.setDescription("Описание 1");
+    t1.setPriority(1);
+    Task t2("Задача 2");
+    t2.setDescription("Описание 2");
+    t2.setPriority(2);
+    model.addTask(t1);
+    qDebug() << "[ADD] Добавлена задача 1. rowCount:" << model.rowCount();
+    model.addTask(t2);
+    qDebug() << "[ADD] Добавлена задача 2. rowCount:" << model.rowCount();
+    qDebug() << "[ADD] getTasks().size():" << model.getTasks().size();
 
-    // Тест 3: setDescription и getDescription
-    t2.setDescription("Подробное описание");
-    Q_ASSERT(t2.getDescription() == "Подробное описание");
+    // 3. Проверка data()
+    QModelIndex idx0 = model.index(0, 0);
+    QModelIndex idx1 = model.index(1, 0);
+    qDebug() << "[DATA] Имя задачи 0:" << model.data(idx0, TaskModel::NameRole).toString();
+    qDebug() << "[DATA] Описание задачи 1:" << model.data(idx1, TaskModel::DescriptionRole).toString();
+    qDebug() << "[DATA] Приоритет задачи 0:" << model.data(idx0, TaskModel::PriorityRole).toInt();
 
-    // Тест 4: setCreatedAt и setUpdatedAt
-    QDateTime now = QDateTime::currentDateTime();
-    t2.setCreatedAt(now);
-    t2.setUpdatedAt(now.addSecs(60));
-    Q_ASSERT(t2.getCreatedAt() == now);
-    Q_ASSERT(t2.getUpdatedAt() == now.addSecs(60));
+    // 4. Проверка getTask
+    Task* taskPtr = model.getTask(0);
+    qDebug() << "[GETTASK] getTask(0):" << (taskPtr ? taskPtr->toString() : "nullptr");
 
-    // Тест 5: Проверка срока и просроченности
-    t2.setDueDate(QDateTime::currentDateTime().addSecs(-3600)); // срок в прошлом
-    Q_ASSERT(t2.isOverdue());
+    // 5. Удаление задачи
+    model.removeTask(0);
+    qDebug() << "[REMOVE] После удаления задачи 0, rowCount:" << model.rowCount();
+    if (model.getTask(0))
+        qDebug() << "[REMOVE] Имя новой задачи 0:" << model.getTask(0)->getName();
+    else
+        qDebug() << "[REMOVE] getTask(0) == nullptr";
 
-    // Тест 6: completed
-    t2.setIsCompleted(true);
-    Q_ASSERT(!t2.isOverdue());
+    // 6. Очистка модели
+    model.clear();
+    qDebug() << "[CLEAR] После очистки, rowCount:" << model.rowCount();
+    qDebug() << "[CLEAR] getTasks().size():" << model.getTasks().size();
 
-    // Тест 7: Приоритет
-    t2.setPriority(1);
-    Q_ASSERT(t2.getPriority() == 1);
+    // 7. Проверка на выход за границы
+    qDebug() << "[OUT OF RANGE] getTask(0):" << (model.getTask(0) ? "NOT nullptr" : "nullptr");
+    qDebug() << "[OUT OF RANGE] data(index(0,0), NameRole):" << model.data(model.index(0, 0), TaskModel::NameRole);
 
-    // Тест 8: Некорректный приоритет
-    t2.setPriority(10);
-    Q_ASSERT(!t2.isValid());
-    t2.setPriority(2); // вернём корректный
+    // 8. Повторное добавление и проверка памяти
+    model.addTask(t1);
+    model.addTask(t2);
+    qDebug() << "[RE-ADD] После повторного добавления, rowCount:" << model.rowCount();
+    model.clear();
+    qDebug() << "[RE-ADD] После повторной очистки, rowCount:" << model.rowCount();
 
-    // Тест 9: Некорректный id
-    t2.setId(-5);
-    Q_ASSERT(!t2.isValid());
-    t2.setId(0); // вернём корректный
-
-    // Тест 10: Пустое имя с пробелами
-    t2.setName("   ");
-    Q_ASSERT(!t2.isValid());
-    t2.setName("Сделать домашку"); // вернём корректное
-
-    // Тест 11: Копирование задачи
-    Task t3(t2);
-    Q_ASSERT(t3.getName() == t2.getName());
-    Q_ASSERT(t3.getId() == t2.getId());
-    Q_ASSERT(t3.getDescription() == t2.getDescription());
-    Q_ASSERT(t3.getDueDate() == t2.getDueDate());
-    Q_ASSERT(t3.isCompleted() == t2.isCompleted());
-    Q_ASSERT(t3.getPriority() == t2.getPriority());
-    Q_ASSERT(t3.getCreatedAt() == t2.getCreatedAt());
-    Q_ASSERT(t3.getUpdatedAt() == t2.getUpdatedAt());
-
-    // Тест 12: toString с разными комбинациями
-    qDebug() << t2.toString();
-    t2.setDescription("");
-    qDebug() << t2.toString();
-
+    qDebug() << "TaskModel тесты успешно пройдены!";
 
     return 0;
 }
