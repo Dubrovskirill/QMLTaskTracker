@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>components/TaskItem.qml</file>
+        <file>components/Header.qml</file>
+        <file>components/AddTaskForm.qml</file>
     </qresource>
 </RCC>

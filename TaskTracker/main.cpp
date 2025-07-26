@@ -1,11 +1,12 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-
-#include "task.h"
-#include "TaskModel.h"
 #include <QDebug>
 #include <QDateTime>
 #include <QModelIndex>
+#include <QQmlContext>
+
+#include "task.h"
+#include "TaskModel.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,10 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+
+    TaskModel taskModel;
+    engine.rootContext()->setContextProperty("taskModel", &taskModel);
+
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
         &app, [url](QObject *obj, const QUrl &objUrl) {
@@ -24,7 +29,7 @@ int main(int argc, char *argv[])
         }, Qt::QueuedConnection);
     engine.load(url);
 
-    qDebug() << "TaskModel тесты успешно пройдены!";
+
 
     return app.exec();
 }
