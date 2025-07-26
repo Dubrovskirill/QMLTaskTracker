@@ -84,7 +84,6 @@ QDateTime Task::getUpdatedAt() const
     return m_updatedAt;
 }
 
-// Сеттеры
 void Task::setId(int id)
 {
     if (m_id != id) {
@@ -149,3 +148,64 @@ void Task::setUpdatedAt(const QDateTime &updatedAt)
     }
 }
 
+bool Task::isOverdue() const
+{
+    if (!m_dueDate.isValid()) {
+        return false;
+    }
+
+    if (m_isCompleted) {
+        return false;
+    }
+
+    return QDateTime::currentDateTime() > m_dueDate;
+}
+
+
+QString Task::toString() const
+{
+    QString result = QString("Task[id=%1, name='%2'")
+                         .arg(m_id)
+                         .arg(m_name);
+
+    if (!m_description.isEmpty()) {
+        result += QString(", description='%1'").arg(m_description);
+    }
+
+    result += QString(", completed=%1, priority=%2")
+                  .arg(m_isCompleted ? "true" : "false")
+                  .arg(m_priority);
+
+    if (m_dueDate.isValid()) {
+        result += QString(", dueDate='%1'")
+                      .arg(m_dueDate.toString("dd.MM.yyyy hh:mm"));
+    }
+
+    result += QString(", createdAt='%1', updatedAt='%2']")
+                  .arg(m_createdAt.toString("dd.MM.yyyy hh:mm"))
+                  .arg(m_updatedAt.toString("dd.MM.yyyy hh:mm"));
+
+    return result;
+}
+
+
+bool Task::isValid() const
+{
+    if (m_name.trimmed().isEmpty()) {
+        return false;
+    }
+
+    if (m_id < 0) {
+        return false;
+    }
+
+    if (m_priority < 1 || m_priority > 3) {
+        return false;
+    }
+
+    if (m_createdAt.isValid() == false || m_updatedAt.isValid() == false) {
+        return false;
+    }
+
+    return true;
+}

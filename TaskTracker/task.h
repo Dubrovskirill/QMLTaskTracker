@@ -48,7 +48,7 @@ public:
 
     // Методы
     bool isOverdue() const;
-    QString toString() const;
+    QString toString() const; // debug method
     bool isValid() const;
 
 
