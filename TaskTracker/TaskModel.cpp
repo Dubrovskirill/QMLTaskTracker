@@ -1,6 +1,12 @@
 #include "TaskModel.h"
 
-TaskModel::TaskModel()
-{
+TaskModel::TaskModel(QObject *parent)
+    : QAbstractListModel(parent)
+{}
 
+
+TaskModel::~TaskModel()
+{
+    qDeleteAll(m_tasks);
+    m_tasks.clear();
 }
