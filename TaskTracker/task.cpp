@@ -42,3 +42,44 @@ Task::~Task()
 {
     qDebug() << "Task destroyed:" << m_name;
 }
+
+
+int Task::getId() const
+{
+    return m_id;
+}
+
+QString Task::getName() const
+{
+    return m_name;
+}
+
+QString Task::getDescription() const
+{
+    return m_description;
+}
+
+QDateTime Task::getDueDate() const
+{
+    return m_dueDate;
+}
+
+bool Task::isCompleted() const
+{
+    return m_isCompleted;
+}
+
+int Task::getPriority() const
+{
+    return m_priority;
+}
+
+QDateTime Task::getCreatedAt() const
+{
+    return m_createdAt;
+}
+
+QDateTime Task::getUpdatedAt() const
+{
+    return m_updatedAt;
+}
