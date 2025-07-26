@@ -55,6 +55,7 @@ ApplicationWindow {
         AddTaskForm {
             width: parent.width
             visible: showAddForm
+            z:10
             onAddTask: {
                 // Добавляем задачу через TaskModel
                 taskModel.addTaskFromStrings(name, description, priority)
