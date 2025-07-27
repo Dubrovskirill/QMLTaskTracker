@@ -3,7 +3,10 @@
 
 #include <QAbstractListModel>
 #include <QList>
-#include "task.h"
+
+class Task;
+class TaskRepository;
+
 
 
 class TaskModel :public QAbstractListModel
@@ -36,12 +39,15 @@ public:
     Q_INVOKABLE void clear();
     Q_INVOKABLE void addTaskFromStrings(const QString &name, const QString &description, int priority);
     Q_INVOKABLE void updateTask(int index, const QString &name, const QString &description, int priority);
-
+    Q_INVOKABLE void saveToRepository();
+    Q_INVOKABLE void loadFromRepository();
+    Q_INVOKABLE void setRepository(TaskRepository *repo);
 
     QList<Task*> getTasks() const;
 
 private:
     QList<Task*> m_tasks;
+    TaskRepository *m_repository;
 
 };
 

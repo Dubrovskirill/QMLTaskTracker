@@ -7,8 +7,10 @@
 #include <QJsonObject>
 #include <QFile>
 #include <QDir>
-#include "task.h"
-#include "TaskModel.h"
+
+
+class Task;
+class TaskModel;
 
 class TaskRepository : public QObject
 {

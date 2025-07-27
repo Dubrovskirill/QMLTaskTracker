@@ -1,6 +1,9 @@
-#include "TaskRepository.h"
 #include <QStandardPaths>
 #include <QDebug>
+
+#include "TaskRepository.h"
+#include "task.h"        // Теперь включаем здесь
+#include "TaskModel.h"
 
 const QString TaskRepository::DEFAULT_FILENAME = "tasks.json";
 

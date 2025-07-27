@@ -1,8 +1,13 @@
 #include "TaskModel.h"
 
+#include "task.h"
+#include "TaskRepository.h"
+
 TaskModel::TaskModel(QObject *parent)
-    : QAbstractListModel(parent)
-{}
+    : QAbstractListModel(parent), m_repository(nullptr)
+{
+    qDebug() << "TaskModel: Конструктор";
+}
 
 
 TaskModel::~TaskModel()
@@ -68,6 +73,8 @@ void TaskModel::addTask(const Task &task)
     beginInsertRows(QModelIndex(), m_tasks.size(), m_tasks.size());
     m_tasks.append(new Task(task));
     endInsertRows();
+
+    saveToRepository();
 }
 
 void TaskModel::removeTask(int row)
@@ -79,6 +86,8 @@ void TaskModel::removeTask(int row)
     delete m_tasks.at(row);
     m_tasks.removeAt(row);
     endRemoveRows();
+
+    saveToRepository();
 }
 
 QVariant TaskModel::getTask(int row) const
@@ -133,4 +142,45 @@ void TaskModel::updateTask(int index, const QString &name, const QString &descri
     task->setDescription(description);
     task->setPriority(priority);
     emit dataChanged(this->index(index), this->index(index));
+
+    saveToRepository();
+}
+
+void TaskModel::saveToRepository()
+{
+    if (m_repository) {
+        if (m_repository->saveTasks(this)) {
+            qDebug() << "TaskModel: Задачи успешно сохранены";
+        } else {
+            qWarning() << "TaskModel: Ошибка при сохранении задач";
+        }
+    } else {
+        qWarning() << "TaskModel: Репозиторий не установлен";
+    }
+}
+
+void TaskModel::loadFromRepository()
+{
+    if (m_repository) {
+        // Очищаем текущие данные
+        beginResetModel();
+        qDeleteAll(m_tasks);
+        m_tasks.clear();
+        endResetModel();
+
+        // Загружаем новые данные
+        if (m_repository->loadTasks(this)) {
+            qDebug() << "TaskModel: Задачи успешно загружены";
+        } else {
+            qWarning() << "TaskModel: Ошибка при загрузке задач";
+        }
+    } else {
+        qWarning() << "TaskModel: Репозиторий не установлен";
+    }
+}
+
+void TaskModel::setRepository(TaskRepository *repo)
+{
+    m_repository = repo;
+    qDebug() << "TaskModel: Репозиторий установлен";
 }
