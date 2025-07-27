@@ -6,6 +6,7 @@ QT += quick
 
 SOURCES += \
         TaskModel.cpp \
+        TaskRepository.cpp \
         main.cpp \
         task.cpp
 
@@ -24,4 +25,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     TaskModel.h \
+    TaskRepository.h \
     task.h
