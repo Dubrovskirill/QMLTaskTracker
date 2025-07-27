@@ -1,112 +1,194 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtQuick.Controls.Material 2.15
+import "../styles" as Styles
 
-Item {
-    id: container
-    width: parent.width
-    height: 200
+Popup {
+    id: taskFormPopup
+    modal: true
+    anchors.centerIn: Overlay.overlay
+    width: Math.min(parent.width - 40, 400)
+    height: contentColumn.implicitHeight + 40
+    padding: 20
+    closePolicy: Popup.NoAutoClose
 
-    // Экспортируем свойства наружу
-    property alias mode: addTaskForm.mode
-    property alias taskName: addTaskForm.taskName
-    property alias taskDescription: addTaskForm.taskDescription
-    property alias taskPriority: addTaskForm.taskPriority
+    property string mode: "add"
+    property string taskName: ""
+    property string taskDescription: ""
+    property int taskPriority: 1
+    property string category: "" // Задел для категории
+    property string dueDate: "" // Задел для срока выполнения
+    property string fontName: "Sans Serif"
 
-    signal addTask(string name, string description, int priority)
+    signal addTask(string name, string description, int priority, string category, string dueDate)
     signal cancel()
 
-    Rectangle {
-        id: addTaskForm
-        anchors.fill: parent
-        color: "lightyellow"
-        border.color: "gray"
+    enter: Transition {
+        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200 }
+        NumberAnimation { property: "scale"; from: 0.9; to: 1; duration: 200 }
+    }
+    exit: Transition {
+        NumberAnimation { property: "opacity"; from: 1; to: 0; duration: 200 }
+        NumberAnimation { property: "scale"; from: 1; to: 0.9; duration: 200 }
+    }
+
+    background: Rectangle {
+        color: "#FFFFFF"
+        radius: 10
+        border.color: Material.dividerColor
         border.width: 1
+    }
 
-        // Внутренние свойства
-        property string mode: "add"
-        property string taskName: ""
-        property string taskDescription: ""
-        property int taskPriority: 1
+    ColumnLayout {
+        id: contentColumn
+        anchors.fill: parent
+        spacing: 15
 
-        // Авто-обновление полей при изменении данных
-        onModeChanged: syncFieldsToUI()
-        onTaskNameChanged: if (visible) nameField.text = taskName
-        onTaskDescriptionChanged: if (visible) descriptionField.text = taskDescription
-        onTaskPriorityChanged: {
-            if (visible) {
-                priorityCombo.currentIndex = taskPriority >= 1 && taskPriority <= 3 ? taskPriority - 1 : 0
-            }
+        Text {
+            text: mode === "add" ? "Добавить новую задачу" : "Редактировать задачу"
+            font.pixelSize: 18
+            font.family: robotoExtraBoldFont.status === FontLoader.Ready ? robotoExtraBoldFont.name : fontName
+            font.bold: true
+            Layout.alignment: Qt.AlignHCenter
         }
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: 10
+        TextField {
+            id: nameField
+            placeholderText: "Название задачи"
+            Layout.fillWidth: true
+            font.family: fontName
+            font.pixelSize: Styles.Style.fontSizeMedium
+        }
+
+        TextArea {
+            id: descriptionField
+            placeholderText: "Описание задачи"
+            Layout.fillWidth: true
+            font.family: fontName
+            font.pixelSize: Styles.Style.fontSizeMedium
+            wrapMode: Text.Wrap
+            implicitHeight: Math.max(100, contentHeight + 20)
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
             spacing: 10
 
-            Text {
-                text: mode === "add" ? "Добавить новую задачу" : "Редактировать задачу"
-                font.pixelSize: 16
-                font.bold: true
-            }
-
-            TextField {
-                id: nameField
-                placeholderText: "Название задачи"
-                Layout.fillWidth: true
-            }
-
-            TextField {
-                id: descriptionField
-                placeholderText: "Описание задачи"
-                Layout.fillWidth: true
-            }
-
-            ComboBox {
-                id: priorityCombo
+            Repeater {
                 model: ["Низкий", "Средний", "Высокий"]
-                Layout.fillWidth: true
-            }
-
-            RowLayout {
-                Layout.fillWidth: true
-                spacing: 10
-
                 Button {
-                    text: mode === "add" ? "Добавить" : "Сохранить"
+                    text: modelData
                     Layout.fillWidth: true
+                    font.family: fontName
+                    font.pixelSize: Styles.Style.fontSizeMedium
+                    highlighted: taskPriority === index + 1
+                    background: Rectangle {
+                        color: highlighted ? "#007AFF" : "#E0E0E0"
+                        radius: 5
+                    }
                     onClicked: {
-                        if (nameField.text.trim() !== "") {
-                            container.addTask(
-                                nameField.text,
-                                descriptionField.text,
-                                priorityCombo.currentIndex + 1
-                            )
-                        }
+                        taskPriority = index + 1
+                        scaleAnimator.start()
+                    }
+                    ScaleAnimator {
+                        id: scaleAnimator
+                        target: parent
+                        from: 1.0
+                        to: 0.95
+                        duration: 100
+                        easing.type: Easing.OutQuad
+                        running: false
                     }
                 }
-
-                Button {
-                    text: "Отмена"
-                    Layout.fillWidth: true
-                    onClicked: container.cancel()
-                }
             }
         }
 
-        // Принудительно обновляем поля при открытии
-        function syncFieldsToUI() {
-            nameField.text = taskName
-            descriptionField.text = taskDescription
-            priorityCombo.currentIndex = taskPriority >= 1 && taskPriority <= 3 ? taskPriority - 1 : 0
+        TextField {
+            id: categoryField
+            placeholderText: "Категория (неактивно)"
+            Layout.fillWidth: true
+            font.family: fontName
+            font.pixelSize: Styles.Style.fontSizeMedium
+            enabled: false
         }
 
-        onVisibleChanged: {
-            if (visible) syncFieldsToUI()
+        TextField {
+            id: dueDateField
+            placeholderText: "Срок выполнения"
+            Layout.fillWidth: true
+            font.family: fontName
+            font.pixelSize: Styles.Style.fontSizeMedium
+            enabled: false
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 10
+
+            Button {
+                text: mode === "add" ? "Добавить" : "Сохранить"
+                Layout.fillWidth: true
+                font.family: robotoBoldFont.status === FontLoader.Ready ? robotoBoldFont.name : fontName
+                font.pixelSize: Styles.Style.fontSizeMedium
+                background: Rectangle {
+                    color: "#007AFF"
+                    radius: 5
+                }
+                onClicked: {
+                    if (nameField.text.trim() !== "") {
+                        addTask(nameField.text, descriptionField.text, taskPriority, categoryField.text, dueDateField.text)
+                    }
+                }
+                ScaleAnimator {
+                    target: parent
+                    from: 1.0
+                    to: 0.95
+                    duration: 100
+                    easing.type: Easing.OutQuad
+                    running: parent.pressed
+                }
+            }
+
+            Button {
+                text: "Отмена"
+                Layout.fillWidth: true
+                font.family: robotoBoldFont.status === FontLoader.Ready ? robotoBoldFont.name : fontName
+                font.pixelSize: Styles.Style.fontSizeMedium
+                background: Rectangle {
+                    color: "#E0E0E0"
+                    radius: 5
+                }
+                onClicked: {
+                    cancel()
+                }
+                ScaleAnimator {
+                    target: parent
+                    from: 1.0
+                    to: 0.95
+                    duration: 100
+                    easing.type: Easing.OutQuad
+                    running: parent.pressed
+                }
+            }
         }
     }
 
-    // Управление видимостью
-    visible: false
-    z: 10
+    // Задел для динамического добавления полей
+    Loader {
+        id: dynamicFieldLoader
+        anchors.fill: parent
+        active: false
+        source: ""
+    }
+
+    function syncFieldsToUI() {
+        nameField.text = taskName
+        descriptionField.text = taskDescription
+        taskPriority = taskPriority // Уже синхронизировано через highlighted
+        categoryField.text = category
+        dueDateField.text = dueDate
+    }
+
+    onOpened: syncFieldsToUI()
 }

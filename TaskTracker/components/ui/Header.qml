@@ -11,7 +11,6 @@ Rectangle {
     property string fontName: "Sans Serif"
 
     Text {
-
         anchors.centerIn: parent
         text: qsTr("Task Tracker")
         font.pixelSize: Styles.Style.fontSizeLarge

@@ -2,23 +2,21 @@ import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
-// Контейнер для одной задачи + кнопка "Удалить" справа
 Item {
     id: container
     width: parent ? parent.width : 0
     height: 80
 
-    // Пробросим сигналы наверх
     signal clicked(string taskName)
     signal requestDelete(int row)
 
-    // Делаем горизонтальную разметку: задача слева, кнопка справа
+    property string fontName: "Sans Serif"
+
     RowLayout {
         anchors.fill: parent
         anchors.margins: 10
         spacing: 10
 
-        // Сама задача — кликабельная область
         Rectangle {
             id: taskItem
             Layout.fillWidth: true
@@ -28,7 +26,6 @@ Item {
             border.width: 1
             radius: 8
 
-            // Содержимое задачи
             Column {
                 anchors.fill: parent
                 anchors.leftMargin: 10
@@ -38,6 +35,7 @@ Item {
                 Text {
                     text: model.name
                     font.pixelSize: 16
+                    font.family: fontName
                     font.bold: true
                     color: "black"
                 }
@@ -45,17 +43,18 @@ Item {
                 Text {
                     text: model.description
                     font.pixelSize: 12
+                    font.family: robotoLightFont.status === FontLoader.Ready ? robotoLightFont.name : fontName
                     color: "gray"
                 }
 
                 Text {
                     text: "Приоритет: " + ["Низкий", "Средний", "Высокий"][model.priority - 1] || "Средний"
                     font.pixelSize: 10
+                    font.family: robotoLightFont.status === FontLoader.Ready ? robotoLightFont.name : fontName
                     color: model.priority === 3 ? "red" : (model.priority === 1 ? "green" : "orange")
                 }
             }
 
-            // Клик по задаче → редактирование
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
@@ -65,12 +64,12 @@ Item {
             }
         }
 
-        // Кнопка "Удалить" — отдельно, не внутри taskItem
         Button {
             text: "Удалить"
             Layout.alignment: Qt.AlignCenter
             Layout.preferredWidth: 80
             Layout.preferredHeight: 40
+            font.family: robotoBoldFont.status === FontLoader.Ready ? robotoBoldFont.name : fontName
             onClicked: {
                 container.requestDelete(index)
             }

@@ -18,38 +18,50 @@ ApplicationWindow {
     property bool showTaskForm: false
     property int editingTaskIndex: -1
     property string formMode: "add"  // "add" или "edit"
-
-
-    Text {
-        anchors.bottom: parent.bottom
-        text: "Тест шрифта Font Test"
-        font.family: robotoFont.status === FontLoader.Ready ? robotoFont.name : "Sans Serif"
-        font.pixelSize: 30
-    }
-
+    property int filterPriority: 0   // Задел для фильтрации (0 - все, 1-3 - приоритет)
 
     FontLoader {
-            id: robotoFont
-            source: "qrc:/resources/fonts/Roboto/Roboto-ExtraBold.ttf"
-            onStatusChanged: {
-                if (status === FontLoader.Ready) {
-                    console.log("Шрифт Roboto загружен: " + name)
-                    Styles.Style.setFontFamily(name)  // ✅ через синглтон
-                } else if (status === FontLoader.Error) {
-                    console.log("Ошибка загрузки шрифта Roboto")
-                }
+        id: robotoRegularFont
+        source: "qrc:/resources/fonts/Roboto/Roboto-Regular.ttf"
+        onStatusChanged: {
+            if (status === FontLoader.Ready) console.log("Шрифт Roboto-Regular загружен: " + name)
+        }
+    }
+
+    FontLoader {
+        id: robotoBoldFont
+        source: "qrc:/resources/fonts/Roboto/Roboto-Bold.ttf"
+        onStatusChanged: {
+            if (status === FontLoader.Ready) console.log("Шрифт Roboto-Bold загружен: " + name)
+        }
+    }
+
+    FontLoader {
+        id: robotoExtraBoldFont
+        source: "qrc:/resources/fonts/Roboto/Roboto-ExtraBold.ttf"
+        onStatusChanged: {
+            if (status === FontLoader.Ready) {
+                console.log("Шрифт Roboto-ExtraBold загружен: " + name)
+                Styles.Style.setFontFamily(name)
+            } else if (status === FontLoader.Error) {
+                console.log("Ошибка загрузки шрифта Roboto-ExtraBold")
             }
         }
+    }
 
+    FontLoader {
+        id: robotoLightFont
+        source: "qrc:/resources/fonts/Roboto/Roboto-Light.ttf"
+        onStatusChanged: {
+            if (status === FontLoader.Ready) console.log("Шрифт Roboto-Light загружен: " + name)
+        }
+    }
 
     Component.onCompleted: {
-        console.log("Статус FontLoader: " + robotoFont.status)
-        console.log("Имя шрифта: " + robotoFont.name)
-        console.log("Имя шрифта Roboto: " + robotoFont.name)
+        console.log("Статус FontLoader (ExtraBold): " + robotoExtraBoldFont.status)
+        console.log("Имя шрифта Roboto-ExtraBold: " + robotoExtraBoldFont.name)
         console.log("Styles.Style тип:", typeof Styles.Style)
         console.log("Styles.Style — это QtObject?", Styles.Style instanceof QtObject)
-
-
         console.log("ApplicationWindow completed")
         console.log("Platform:", Qt.platform.os)
         console.log("Window size:", width, "x", height)
@@ -67,67 +79,67 @@ ApplicationWindow {
     }
 
     Column {
+        id: mainColumn
         anchors.fill: parent
         anchors.margins: 10
 
-        Header {
+        Loader {
+            id: headerLoader
             width: parent.width
-            fontName: robotoFont.status === FontLoader.Ready ? robotoFont.name : "Sans Serif"
+            source: "components/ui/Header.qml"
+            onLoaded: {
+                item.fontName = robotoExtraBoldFont.status === FontLoader.Ready ? robotoExtraBoldFont.name : "Sans Serif"
+            }
         }
 
         Button {
+            id: addTaskButton
             width: parent.width
             height: 50
             text: "Добавить задачу"
+            font.family: robotoBoldFont.status === FontLoader.Ready ? robotoBoldFont.name : "Sans Serif"
+            font.pixelSize: Styles.Style.fontSizeMedium
             onClicked: {
+                console.log("Кнопка 'Добавить задачу' нажата")
                 formMode = "add"
-                taskForm.taskName = ""
-                taskForm.taskDescription = ""
-                taskForm.taskPriority = 1
-                showTaskForm = true
+                taskFormPopup.mode = formMode
+                taskFormPopup.taskName = ""
+                taskFormPopup.taskDescription = ""
+                taskFormPopup.taskPriority = 1
+                taskFormPopup.open()
             }
         }
 
-        AddTaskForm {
-            id: taskForm
+        ComboBox {
+            id: priorityFilter
             width: parent.width
-            visible: showTaskForm
-            mode: formMode
-
-            onAddTask: {
-                if (mode === "add") {
-                    taskModel.addTaskFromStrings(name, description, priority)
-                } else if (mode === "edit") {
-                    taskModel.updateTask(editingTaskIndex, name, description, priority)
-                }
-                showTaskForm = false
-                editingTaskIndex = -1
-                formMode = "add"
-            }
-
-            onCancel: {
-                showTaskForm = false
-                editingTaskIndex = -1
-                formMode = "add"
+            model: ["Все", "Низкий", "Средний", "Высокий"]
+            font.family: robotoRegularFont.status === FontLoader.Ready ? robotoRegularFont.name : "Sans Serif"
+            font.pixelSize: Styles.Style.fontSizeMedium
+            onCurrentIndexChanged: {
+                filterPriority = currentIndex === 0 ? 0 : currentIndex
+                console.log("Фильтр приоритета изменён на:", filterPriority)
             }
         }
 
         ListView {
             width: parent.width
-            height: parent.height - 120
+            height: parent.height - headerLoader.height - addTaskButton.height - priorityFilter.height - 30
             model: taskModel
-
             delegate: TaskItem {
+                fontName: robotoRegularFont.status === FontLoader.Ready ? robotoRegularFont.name : "Sans Serif"
+                visible: filterPriority === 0 || model.priority === filterPriority // Фильтрация по приоритету
                 onClicked: {
                     console.log("Клик по задаче:", taskName, "Индекс:", index)
                     editingTaskIndex = index
                     var task = taskModel.getTask(index)
                     if (task) {
                         formMode = "edit"
-                        taskForm.taskName = task.name
-                        taskForm.taskDescription = task.description
-                        taskForm.taskPriority = task.priority
-                        showTaskForm = true
+                        taskFormPopup.mode = formMode
+                        taskFormPopup.taskName = task.name
+                        taskFormPopup.taskDescription = task.description
+                        taskFormPopup.taskPriority = task.priority
+                        taskFormPopup.open()
                     } else {
                         console.warn("Задача не найдена по индексу:", index)
                     }
@@ -136,6 +148,26 @@ ApplicationWindow {
                     taskModel.removeTask(index)
                 }
             }
+        }
+    }
+
+    AddTaskForm {
+        id: taskFormPopup
+        fontName: robotoRegularFont.status === FontLoader.Ready ? robotoRegularFont.name : "Sans Serif"
+        onAddTask: (name, description, priority, category, dueDate) => {
+            if (formMode === "add") {
+                taskModel.addTaskFromStrings(name, description, priority)
+            } else if (formMode === "edit") {
+                taskModel.updateTask(editingTaskIndex, name, description, priority)
+            }
+            taskFormPopup.close()
+            editingTaskIndex = -1
+            formMode = "add"
+        }
+        onCancel: {
+            taskFormPopup.close()
+            editingTaskIndex = -1
+            formMode = "add"
         }
     }
 }

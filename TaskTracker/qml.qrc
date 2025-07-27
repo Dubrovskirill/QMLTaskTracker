@@ -8,6 +8,8 @@
         <file>components/controls</file>
         <file>resources/fonts/Roboto/Roboto-Regular.ttf</file>
         <file>resources/fonts/Roboto/Roboto-ExtraBold.ttf</file>
+        <file>resources/fonts/Roboto/Roboto-Bold.ttf</file>
+        <file>resources/fonts/Roboto/Roboto-Light.ttf</file>
         <file>components/styles/qmldir</file>
     </qresource>
 </RCC>
