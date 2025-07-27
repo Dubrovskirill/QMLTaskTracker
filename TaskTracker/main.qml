@@ -2,6 +2,7 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import "components/ui"
+import "components/styles" as Styles
 
 ApplicationWindow {
     id: window
@@ -18,7 +19,37 @@ ApplicationWindow {
     property int editingTaskIndex: -1
     property string formMode: "add"  // "add" или "edit"
 
+
+    Text {
+        anchors.bottom: parent.bottom
+        text: "Тест шрифта Font Test"
+        font.family: robotoFont.status === FontLoader.Ready ? robotoFont.name : "Sans Serif"
+        font.pixelSize: 30
+    }
+
+
+    FontLoader {
+            id: robotoFont
+            source: "qrc:/resources/fonts/Roboto/Roboto-ExtraBold.ttf"
+            onStatusChanged: {
+                if (status === FontLoader.Ready) {
+                    console.log("Шрифт Roboto загружен: " + name)
+                    Styles.Style.setFontFamily(name)  // ✅ через синглтон
+                } else if (status === FontLoader.Error) {
+                    console.log("Ошибка загрузки шрифта Roboto")
+                }
+            }
+        }
+
+
     Component.onCompleted: {
+        console.log("Статус FontLoader: " + robotoFont.status)
+        console.log("Имя шрифта: " + robotoFont.name)
+        console.log("Имя шрифта Roboto: " + robotoFont.name)
+        console.log("Styles.Style тип:", typeof Styles.Style)
+        console.log("Styles.Style — это QtObject?", Styles.Style instanceof QtObject)
+
+
         console.log("ApplicationWindow completed")
         console.log("Platform:", Qt.platform.os)
         console.log("Window size:", width, "x", height)
@@ -41,6 +72,7 @@ ApplicationWindow {
 
         Header {
             width: parent.width
+            fontName: robotoFont.status === FontLoader.Ready ? robotoFont.name : "Sans Serif"
         }
 
         Button {

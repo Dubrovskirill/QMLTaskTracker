@@ -4,7 +4,10 @@
         <file>components/ui/TaskItem.qml</file>
         <file>components/ui/Header.qml</file>
         <file>components/ui/AddTaskForm.qml</file>
-        <file>components/styles/</file>
+        <file>components/styles/Style.qml</file>
         <file>components/controls</file>
+        <file>resources/fonts/Roboto/Roboto-Regular.ttf</file>
+        <file>resources/fonts/Roboto/Roboto-ExtraBold.ttf</file>
+        <file>components/styles/qmldir</file>
     </qresource>
 </RCC>
