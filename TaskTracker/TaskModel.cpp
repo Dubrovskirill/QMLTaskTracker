@@ -141,6 +141,7 @@ void TaskModel::updateTask(int index, const QString &name, const QString &descri
     task->setName(name);
     task->setDescription(description);
     task->setPriority(priority);
+    task->setUpdatedAt(QDateTime::currentDateTime());
     emit dataChanged(this->index(index), this->index(index));
 
     saveToRepository();
