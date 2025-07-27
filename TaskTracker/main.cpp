@@ -23,7 +23,8 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     TaskModel taskModel;
-    TaskRepository repository; // Добавляем репозиторий
+    TaskRepository repository;
+    taskModel.setRepository(&repository);
 
     // Загружаем задачи при запуске
     if (!repository.loadTasks(&taskModel)) {
