@@ -8,6 +8,7 @@
 
 #include "task.h"
 #include "TaskModel.h"
+#include "TaskRepository.h"
 
 int main(int argc, char *argv[])
 {
@@ -22,7 +23,15 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     TaskModel taskModel;
+    TaskRepository repository; // Добавляем репозиторий
+
+    // Загружаем задачи при запуске
+    if (!repository.loadTasks(&taskModel)) {
+        qWarning() << "Не удалось загрузить задачи";
+    }
     engine.rootContext()->setContextProperty("taskModel", &taskModel);
+    engine.rootContext()->setContextProperty("repository", &repository);
+
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
@@ -31,6 +40,12 @@ int main(int argc, char *argv[])
                 QCoreApplication::exit(-1);
         }, Qt::QueuedConnection);
     engine.load(url);
+
+    QObject::connect(&app, &QGuiApplication::aboutToQuit, [&]() {
+        if (!repository.saveTasks(&taskModel)) {
+            qWarning() << "Не удалось сохранить задачи";
+        }
+    });
 
     return app.exec();
 }
