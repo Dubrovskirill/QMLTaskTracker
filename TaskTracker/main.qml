@@ -17,7 +17,7 @@ ApplicationWindow {
     maximumWidth: 640
     maximumHeight: 1138
 
-    readonly property color bgColor: "#09080d"
+    readonly property color bgColor: "#000000"
     readonly property color textColor: "#fefefe"
 
     Component.onCompleted: {
@@ -45,6 +45,10 @@ ApplicationWindow {
         }
 
         footer: NavigationMenu {
+
+//            btnAddTask.style: ButtonStyle {
+
+//            }
 
         }
 
