@@ -13,5 +13,6 @@
         <file>components/styles/qmldir</file>
         <file>NavigationMenu.qml</file>
         <file>TaskItem.qml</file>
+        <file>AddTaskPage.qml</file>
     </qresource>
 </RCC>

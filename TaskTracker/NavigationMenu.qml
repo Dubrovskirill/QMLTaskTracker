@@ -13,7 +13,7 @@ Item {
 
 
 
-    //todo signal
+    signal newTask()
 
     ToolBar {
         id: toolBar
@@ -30,7 +30,12 @@ Item {
 
 
 
-            //todo onClicked
+            onClicked: {
+                console.log("Отправлено")
+                root.newTask()
+
+            }
+
             width: 40
             height: width
 

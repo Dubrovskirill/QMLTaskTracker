@@ -40,10 +40,18 @@ ApplicationWindow {
             console.log("Mobile mode")
         }
     }
+    StackView {
+        id:stackView
+        anchors.fill: parent
+        initialItem: mainPage
+    }
+    function popPage() {
+        stackView.pop();
+    }
 
     Page {
         id: mainPage
-        anchors.fill: parent
+        //anchors.fill: parent
         background: Rectangle {
             color: window.bgColor
         }
@@ -71,20 +79,24 @@ ApplicationWindow {
                 name: model.name
                 descr: model.description
                 priority: model.priority === 3 ? "red" : (model.priority === 1 ? "green" : "orange")
-
             }
         }
 
 
         footer: NavigationMenu {
+            onNewTask: {
+                console.log("Полученно")
+                stackView.push(addTaskPageComponent)
 
+            }
         }
+    }
 
-
-
-
-
-
+    Component {
+        id: addTaskPageComponent
+        AddTaskPage {
+            id: addTaskPage
+        }
     }
 
 
