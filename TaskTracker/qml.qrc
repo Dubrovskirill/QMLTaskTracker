@@ -1,7 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>main.qml</file>
-        <file>components/ui/TaskItem.qml</file>
+        <file>components/ui/TaskItem22.qml</file>
         <file>components/ui/Header.qml</file>
         <file>components/ui/AddTaskForm.qml</file>
         <file>components/styles/Style.qml</file>
@@ -12,5 +12,6 @@
         <file>resources/fonts/Roboto/Roboto-Light.ttf</file>
         <file>components/styles/qmldir</file>
         <file>NavigationMenu.qml</file>
+        <file>TaskItem.qml</file>
     </qresource>
 </RCC>

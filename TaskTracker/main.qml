@@ -2,8 +2,8 @@ import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
-import "components/ui"
-import "components/styles" as Styles
+//import "components/ui"
+//import "components/styles" as Styles
 
 ApplicationWindow {
     id: window
@@ -17,8 +17,12 @@ ApplicationWindow {
     maximumWidth: 640
     maximumHeight: 1138
 
+    readonly property int  defMargin: 10
+
+
     readonly property color bgColor: "#000000"
     readonly property color textColor: "#fefefe"
+    readonly property color taskColor: "#19191b"
 
     Component.onCompleted: {
         console.log("ApplicationWindow completed")
@@ -44,11 +48,35 @@ ApplicationWindow {
             color: window.bgColor
         }
 
+        header: Rectangle{
+            height: 100
+            color: "lightgrey"
+        }
+
+        ListView {
+            id: listView
+            anchors.fill: parent
+            spacing: defMargin
+            anchors.topMargin: defMargin
+            anchors.bottomMargin: defMargin
+            ScrollBar.vertical: ScrollBar {}
+            model: taskModel
+            delegate: TaskItem {
+                height: 80
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.topMargin: defMargin
+                anchors.bottomMargin: defMargin
+
+                name: model.name
+                descr: model.description
+                priority: model.priority === 3 ? "red" : (model.priority === 1 ? "green" : "orange")
+
+            }
+        }
+
+
         footer: NavigationMenu {
-
-//            btnAddTask.style: ButtonStyle {
-
-//            }
 
         }
 
