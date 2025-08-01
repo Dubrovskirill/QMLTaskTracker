@@ -11,5 +11,6 @@
         <file>resources/fonts/Roboto/Roboto-Bold.ttf</file>
         <file>resources/fonts/Roboto/Roboto-Light.ttf</file>
         <file>components/styles/qmldir</file>
+        <file>NavigationMenu.qml</file>
     </qresource>
 </RCC>
