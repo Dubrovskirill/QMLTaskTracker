@@ -96,6 +96,12 @@ ApplicationWindow {
         id: addTaskPageComponent
         AddTaskPage {
             id: addTaskPage
+            Connections {
+                target: addTaskPage
+                function onAddTask(name, description, priority) {
+                    taskModel.addTaskFromStrings(name, description, priority)
+                }
+            }
         }
     }
 

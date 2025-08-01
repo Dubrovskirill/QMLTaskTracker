@@ -7,12 +7,22 @@ import QtQuick.Controls.Material 2.15
 Page {
     id: root
 
+
+
     property string taskName: ""
     property string taskDescription: ""
     property int taskPriority: 1
     background: Rectangle {
         color: window.bgColor
     }
+
+    function syncFieldsToUI() {
+        nameText.text = taskName
+        descriptionText.text = taskDescription
+        taskPriority = taskPriority
+    }
+    signal addTask(string name, string description, int priority)
+
 
     header: ToolBar {
         id:toolBar
@@ -213,9 +223,8 @@ Page {
             padding: 0
             enabled: nameText.text.length > 0
             onClicked: {
-                console.log("Отправлено")
-               // root.newTask()
-
+                addTask(nameText.text, descriptionText.text, taskPriority)
+                popPage()
             }
 
             width: 100
