@@ -96,7 +96,7 @@ Page {
             TextField {
                 id: nameText
                 selectByMouse: true
-                placeholderText: "Название задачи"
+                placeholderText: "Task name"
                 Layout.fillWidth: true
                 padding: 0
                 leftPadding: 0
@@ -130,14 +130,14 @@ Page {
                 id: flickable
                 Layout.fillWidth: true
                 width: parent.width
-                height: Math.min(contentHeight, descriptionText.font.pixelSize)
+                height: Math.min(contentHeight, descriptionText.font.pixelSize*1.19)
                 contentWidth: width
                 contentHeight: descriptionText.implicitHeight
 
                 TextArea.flickable: TextArea {
                     id: descriptionText
                     selectByMouse: true
-                    placeholderText: "Описание задачи"
+                    placeholderText: "Task description"
                     Layout.fillWidth: true
                     padding: 0
                     leftPadding: 0

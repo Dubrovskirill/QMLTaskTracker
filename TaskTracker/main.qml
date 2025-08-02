@@ -73,8 +73,6 @@ ApplicationWindow {
                 id: taskItem
                 height: 80
                 width: mainPage.width
-                //anchors.left: parent.left
-                //anchors.right: parent.right
                 anchors.topMargin: defMargin
                 anchors.bottomMargin: defMargin
 

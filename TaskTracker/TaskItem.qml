@@ -44,23 +44,50 @@ SwipeDelegate {
 
             anchors.left:priorityIndicator.right
             anchors.top: parent.top
+            anchors.right : rectLimiter.left
             anchors.leftMargin: 20
+            anchors.rightMargin: 5
             anchors.topMargin: 10
+            elide: Text.ElideRight
+            maximumLineCount: 1
+
 
         }
 
         Text {
             id:lblDescr
-
             color: Qt.darker(textColor, 2)
             font.pixelSize: 12
             anchors.left:priorityIndicator.right
+            anchors.right : rectLimiter.left
             anchors.leftMargin: 20
+            anchors.rightMargin: 5
             anchors.top: lblName.bottom
             anchors.topMargin: 10
+            elide: Text.ElideRight
+            maximumLineCount: 1
         }
 
+        Rectangle {
+            id: rectLimiter
+            height: parent.height
+            width: 150
+            anchors.right : parent.right
+            color: "transparent"
 
+            Text {
+                id: lblDueDate
+                text: "Complete by"
+                color: Qt.darker(textColor, 2)
+                font.pixelSize: 16
+                anchors.top: parent.top
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.topMargin: 10
+
+
+
+            }
+        }
 
 
     }
@@ -90,12 +117,12 @@ SwipeDelegate {
         NumberAnimation { properties: "x"; duration: 150 }
     }
     swipe.onCompleted: {
-            if (swipe.position < 0) { // Свайп вправо
-                root.requestDelete(index)
-                console.log("Задача удалена при полном свайпе:", model.name)
-            }
-            root.swipe.close() // Закрываем свайп после завершения
+        if (swipe.position < 0) { // Свайп вправо
+            root.requestDelete(index)
+            console.log("Задача удалена при полном свайпе:", model.name)
         }
+        root.swipe.close() // Закрываем свайп после завершения
+    }
 
 }
 
