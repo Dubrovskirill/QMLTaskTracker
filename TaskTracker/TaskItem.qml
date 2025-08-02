@@ -99,7 +99,8 @@ SwipeDelegate {
             stackView.push(infoTaskPageComponent, {
                                taskName: model.name,
                                taskDescription: model.description,
-                               taskPriority: model.priority
+                               taskPriority: model.priority,
+                               taskIndex: index
                            }
                            )
 

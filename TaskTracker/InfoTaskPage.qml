@@ -12,6 +12,7 @@ Page {
     property string taskName: ""
     property string taskDescription: ""
     property int taskPriority: 1
+    property int taskIndex: 0
     background: Rectangle {
         color: window.bgColor
     }
@@ -20,6 +21,7 @@ Page {
         nameText.text = taskName
         descriptionText.text = taskDescription
         taskPriority = taskPriority
+
     }
     signal addTask(string name, string description, int priority)
 
@@ -77,6 +79,7 @@ Page {
                                    taskName: root.taskName, // Use page properties
                                    taskDescription: root.taskDescription,
                                    taskPriority: root.taskPriority,
+                                   taskIndex: taskIndex
                                })
             }
             width: 50

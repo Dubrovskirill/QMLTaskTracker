@@ -108,8 +108,8 @@ ApplicationWindow {
                 function onAddTask(name, description, priority) {
                     taskModel.addTaskFromStrings(name, description, priority)
                 }
-                function onEditTask(name, description, priority) {
-                    taskModel.updateTask(name, description, priority)
+                function onEditTask(row,name, description, priority) {
+                    taskModel.updateTask(row,name, description, priority)
                 }
             }
         }

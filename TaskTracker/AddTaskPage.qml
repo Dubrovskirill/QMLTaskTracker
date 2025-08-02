@@ -12,6 +12,7 @@ Page {
     property string taskName: ""
     property string taskDescription: ""
     property int taskPriority: 1
+    property int taskIndex: 0
     background: Rectangle {
         color: window.bgColor
     }
@@ -22,7 +23,7 @@ Page {
         taskPriority = taskPriority
     }
     signal addTask(string name, string description, int priority)
-    signal editTask(string name, string description, int priority)
+    signal editTask(int row, string name, string description, int priority)
 
 
     header: ToolBar {
@@ -226,7 +227,7 @@ Page {
             enabled: nameText.text.length > 0
             onClicked: {
 
-                mode === "add" ? addTask(nameText.text, descriptionText.text, taskPriority): editTask(nameText.text, descriptionText.text, taskPriority)
+                mode === "add" ? addTask(nameText.text, descriptionText.text, taskPriority): editTask(taskIndex, nameText.text, descriptionText.text, taskPriority)
                 popPage(mainPage)
             }
 
