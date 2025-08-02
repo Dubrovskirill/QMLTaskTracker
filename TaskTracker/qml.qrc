@@ -14,5 +14,6 @@
         <file>NavigationMenu.qml</file>
         <file>TaskItem.qml</file>
         <file>AddTaskPage.qml</file>
+        <file>InfoTaskPage.qml</file>
     </qresource>
 </RCC>

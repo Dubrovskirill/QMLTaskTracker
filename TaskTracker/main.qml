@@ -45,13 +45,12 @@ ApplicationWindow {
         anchors.fill: parent
         initialItem: mainPage
     }
-    function popPage() {
-        stackView.pop();
+    function popPage(targetPageName) {
+        stackView.pop(targetPageName);
     }
 
     Page {
         id: mainPage
-        //anchors.fill: parent
         background: Rectangle {
             color: window.bgColor
         }
@@ -109,7 +108,19 @@ ApplicationWindow {
                 function onAddTask(name, description, priority) {
                     taskModel.addTaskFromStrings(name, description, priority)
                 }
+                function onEditTask(name, description, priority) {
+                    taskModel.updateTask(name, description, priority)
+                }
             }
+        }
+    }
+
+    Component {
+        id: infoTaskPageComponent
+
+        InfoTaskPage {
+            id: infoTaskPage
+
         }
     }
 

@@ -8,7 +8,7 @@ Page {
     id: root
 
 
-
+    property string mode: "add"
     property string taskName: ""
     property string taskDescription: ""
     property int taskPriority: 1
@@ -22,6 +22,7 @@ Page {
         taskPriority = taskPriority
     }
     signal addTask(string name, string description, int priority)
+    signal editTask(string name, string description, int priority)
 
 
     header: ToolBar {
@@ -36,7 +37,6 @@ Page {
             text: "<"
             anchors.verticalCenter: parent.verticalCenter
             onClicked: {
-                console.log("xnj " +nameText.width)
                 popPage();
             }
             width: 50
@@ -60,7 +60,7 @@ Page {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: btnBack.right
-            text: "New task"
+            text: mode === "add" ? "New task" : "Edit task"
             font.pointSize: 16
             color: window.textColor
             anchors.leftMargin: 30
@@ -95,6 +95,7 @@ Page {
 
             TextField {
                 id: nameText
+                text: taskName
                 selectByMouse: true
                 placeholderText: "Task name"
                 Layout.fillWidth: true
@@ -136,6 +137,7 @@ Page {
 
                 TextArea.flickable: TextArea {
                     id: descriptionText
+                    text: taskDescription
                     selectByMouse: true
                     placeholderText: "Task description"
                     Layout.fillWidth: true
@@ -223,8 +225,9 @@ Page {
             padding: 0
             enabled: nameText.text.length > 0
             onClicked: {
-                addTask(nameText.text, descriptionText.text, taskPriority)
-                popPage()
+
+                mode === "add" ? addTask(nameText.text, descriptionText.text, taskPriority): editTask(nameText.text, descriptionText.text, taskPriority)
+                popPage(mainPage)
             }
 
             width: 100

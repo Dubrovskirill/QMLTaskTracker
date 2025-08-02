@@ -20,6 +20,7 @@ Item {
         anchors.fill: parent
         background: Rectangle {
             color: window.bgColor
+
         }
 
         ToolButton {
