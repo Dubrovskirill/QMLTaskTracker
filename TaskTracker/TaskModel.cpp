@@ -4,7 +4,7 @@
 #include "TaskRepository.h"
 
 TaskModel::TaskModel(QObject *parent)
-    : QAbstractListModel(parent), m_repository(nullptr)
+    : QAbstractListModel(parent), m_repository(nullptr), m_lastId(0)
 {
     qDebug() << "TaskModel: Конструктор";
 }
@@ -130,6 +130,7 @@ void TaskModel::addTaskFromStrings(const QString &name, const QString &descripti
     Task task(name);
     task.setDescription(description);
     task.setPriority(priority);
+    task.setId(++m_lastId);
     addTask(task); // используем уже существующий метод
 }
 
@@ -184,4 +185,12 @@ void TaskModel::setRepository(TaskRepository *repo)
 {
     m_repository = repo;
     qDebug() << "TaskModel: Репозиторий установлен";
+}
+
+
+void TaskModel::updateLastId(int id)
+{
+    if (id > m_lastId) {
+        m_lastId = id;
+    }
 }

@@ -44,10 +44,12 @@ public:
     Q_INVOKABLE void setRepository(TaskRepository *repo);
 
     QList<Task*> getTasks() const;
+    void updateLastId(int id);
 
 private:
     QList<Task*> m_tasks;
     TaskRepository *m_repository;
+    int m_lastId;
 
 };
 

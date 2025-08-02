@@ -55,6 +55,7 @@ bool TaskRepository::loadTasks(TaskModel *taskModel)
             Task *task = jsonToTask(value.toObject());
             if (task && task->isValid()) {
                 taskModel->addTask(*task);
+                taskModel->updateLastId(task->getId());
                 delete task; // Освобождаем память
             }
         }
