@@ -138,7 +138,7 @@ void TaskModel::addTaskFromStrings(const QString &name, const QString &descripti
     addTask(task); // используем уже существующий метод
 }
 
-void TaskModel::updateTask(int index, const QString &name, const QString &description, int priority)
+void TaskModel::updateTask(int index, const QString &name, const QString &description, int priority, const QVariant &dueDate)
 {
     if (index < 0 || index >= m_tasks.size())
         return;
@@ -146,6 +146,11 @@ void TaskModel::updateTask(int index, const QString &name, const QString &descri
     task->setName(name);
     task->setDescription(description);
     task->setPriority(priority);
+    if (dueDate.canConvert<QDateTime>()) {
+        QDateTime dt = dueDate.value<QDateTime>();
+        task->setDueDate(dt);
+    }
+
     task->setUpdatedAt(QDateTime::currentDateTime());
     emit dataChanged(this->index(index), this->index(index));
 

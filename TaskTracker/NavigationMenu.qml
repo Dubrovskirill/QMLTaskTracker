@@ -32,7 +32,6 @@ Item {
 
 
             onClicked: {
-                console.log("Отправлено")
                 root.newTask()
 
             }

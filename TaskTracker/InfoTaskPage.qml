@@ -7,7 +7,8 @@ import QtQuick.Controls.Material 2.15
 
 Page {
     id: root
-    property int taskIndex: 0
+    property string mode: "add"
+    property int taskIndex: -1
 
     property string taskName: ""
     property string taskDescription: ""
@@ -16,10 +17,11 @@ Page {
     property string taskDueDate: ""
     property string taskDueTime: ""
     property bool taskStatus: false
-    property string taskCreatedAt: ""
-    property string taskUpdatedAt: ""
+
     property bool isCurrentDate: false
 
+    property date taskCreatedAt: undefined
+    property date taskUpdatedAt: undefined
 
 
     background: Rectangle {
@@ -41,12 +43,13 @@ Page {
             taskDueTime = ""
         }
 
+        taskCreatedAt = taskData.createdAt || undefined
+        taskUpdatedAt = taskData.updatedAt || undefined
 
         taskStatus = taskData.isCompleted || false
-        taskCreatedAt = taskData.createdAt || ""
-        taskUpdatedAt = taskData.updatedAt || ""
     }
     signal addTask(string name, string description, int priority, var dueDate)
+    signal editTask(int row, string name, string description, int priority, var dueDate)
 
 
     header: ToolBar {
@@ -84,44 +87,12 @@ Page {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: btnBack.right
-            text: "Info"
+            text: mode === "add" ? "New task" : "Info"
             font.pointSize: 16
             color: window.textColor
             anchors.leftMargin: 30
         }
 
-        ToolButton {
-            id: btnEdit
-            text: "Edit"
-            anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: 15
-            onClicked: {
-                stackView.push(addTaskPageComponent, {
-                                   mode: "edit", // Устанавливаем режим редактирования
-                                   taskName: root.taskName, // Use page properties
-                                   taskDescription: root.taskDescription,
-                                   taskPriority: root.taskPriority,
-                                   taskIndex: taskIndex
-                               })
-            }
-            width: 50
-            height: width
-            contentItem: Text {
-                text: parent.text
-                width: parent.width
-                height: parent.height
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                color: window.textColor
-                font.pixelSize: 25
-
-            }
-            background: Rectangle {
-                color: window.bgColor
-            }
-
-        }
     }
 
     Rectangle {
@@ -130,14 +101,14 @@ Page {
         anchors.fill: parent
         anchors.leftMargin: 10
         anchors.rightMargin: 10
-        anchors.bottomMargin: 330
+        anchors.bottomMargin: 360
         radius: 20
 
         ColumnLayout {
             id: contentColumn
             anchors.fill: parent
             anchors.margins: 15
-            spacing: 20
+            spacing: 17
 
             Label {
                 id: lblName
@@ -279,7 +250,7 @@ Page {
                 Column {
 
 
-                    spacing: 20
+                    spacing: 17
                     Label {
                         id: lblDueDate
                         Layout.fillWidth: true
@@ -350,7 +321,7 @@ Page {
 
 
 
-                    spacing: 20
+                    spacing: 17
                     Label {
                         id: lblDueTime
                         Layout.fillWidth: true
@@ -433,13 +404,13 @@ Page {
         anchors.rightMargin: 10
         anchors.bottomMargin: 195
 
-        visible: true
+        visible: mode === "add" ? false : true
         radius: 20
         ColumnLayout {
             id: infotColumn
             anchors.fill: parent
             anchors.margins: 15
-            spacing: 20
+            spacing: 17
 
             Label {
                 id: lblStatus
@@ -464,7 +435,7 @@ Page {
                 Label {
                     id: lblCreatedAt
 
-                    text: "Created at: "
+                    text: "Created at: " + isoToDateFormat(taskCreatedAt) + " " + isoToTimeFormat(taskCreatedAt)
                     padding: 0
 
                     color: Qt.darker(window.textColor, 1.5)
@@ -474,7 +445,7 @@ Page {
                 Label {
 
 
-                    text: "Updated at: "
+                    text: "Updated at: " + isoToDateFormat(taskUpdatedAt) + " " + isoToTimeFormat(taskUpdatedAt)
                     padding: 0
 
                     color: Qt.darker(window.textColor, 1.5)
@@ -511,8 +482,9 @@ Page {
                 }
 
 
-                addTask(nameText.text, descriptionText.text, taskPriority, taskDueDateTime)
-                popPage()
+                mode === "add" ? addTask(nameText.text, descriptionText.text, taskPriority, taskDueDateTime)
+                               : editTask(taskIndex, nameText.text, descriptionText.text, taskPriority, taskDueDateTime)
+                popPage(mainPage)
             }
 
             width: 100

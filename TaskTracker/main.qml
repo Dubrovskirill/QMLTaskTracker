@@ -93,24 +93,8 @@ ApplicationWindow {
         footer: NavigationMenu {
             onNewTask: {
                 console.log("Полученно")
-                stackView.push(addTaskPageComponent)
+                stackView.push(infoTaskPageComponent)
 
-            }
-        }
-    }
-
-    Component {
-        id: addTaskPageComponent
-        AddTaskPage {
-            id: addTaskPage
-            Connections {
-                target: addTaskPage
-                //                function onAddTask(name, description, priority) {
-                //                    taskModel.addTaskFromStrings(name, description, priority)
-                //                }
-                //                function onEditTask(row,name, description, priority) {
-                //                    taskModel.updateTask(row,name, description, priority)
-                //                }
             }
         }
     }
@@ -124,6 +108,9 @@ ApplicationWindow {
                 target: infoTaskPage
                 function onAddTask(name, description, priority, dueDate) {
                     taskModel.addTaskFromStrings(name, description, priority, dueDate)
+                }
+                function onEditTask(row,name, description, priority, dueDate) {
+                    taskModel.updateTask(row,name, description, priority, dueDate)
                 }
             }
 
