@@ -12,12 +12,15 @@ Page {
     property string taskName: ""
     property string taskDescription: ""
     property int taskPriority: 1
-    property date taskDueDate: undefined
+    property date taskDueDateTime: undefined
+    property string taskDueDate: ""
+    property string taskDueTime: ""
     property bool taskStatus: false
     property string taskCreatedAt: ""
     property string taskUpdatedAt: ""
-
     property bool isCurrentDate: false
+
+
 
     background: Rectangle {
         color: window.bgColor
@@ -28,7 +31,17 @@ Page {
         taskName = taskData.name || ""
         taskDescription = taskData.description || ""
         taskPriority = taskData.priority || 1
-        taskDueDate = taskData.dueDate || ""
+        taskDueDateTime = taskData.dueDate || undefined
+
+        if (taskData.dueDate !== "") {
+            taskDueDate = isoToDateFormat(taskData.dueDate)
+            taskDueTime = isoToTimeFormat(taskData.dueDate)
+        } else {
+            taskDueDate = ""
+            taskDueTime = ""
+        }
+
+
         taskStatus = taskData.isCompleted || false
         taskCreatedAt = taskData.createdAt || ""
         taskUpdatedAt = taskData.updatedAt || ""
@@ -313,7 +326,10 @@ Page {
                             }
                         }
                         onTextChanged: {
-                            updateBorderColor()
+                           dueDateText.updateBorderColor()
+                           dueTimeText.updateBorderColor()
+
+                            console.log(dueDateText.text + " " + dueTimeText.text)
                         }
 
                         onFocusChanged: {
@@ -324,7 +340,8 @@ Page {
                             if (!dueDateText.focus && dueDateText.text === "..") {
                                 dueDateText.inputMask = ""
                             }
-                            updateBorderColor()
+                            dueDateText.updateBorderColor()
+                            dueTimeText.updateBorderColor()
                         }
 
                     }
@@ -348,7 +365,7 @@ Page {
                     TextField {
                         id: dueTimeText
                         property bool showError: false
-                        text: taskDueDate
+                        text: taskDueTime
                         selectByMouse: true
                         enabled: (isValidDate(dueDateText.text) && dueDateText.text.length !== 0) ? true : false
                         placeholderText: "hh:mm"
@@ -395,10 +412,10 @@ Page {
                     }
                 }
             }
-                 Item {
-                     Layout.fillWidth: true
-                     Layout.fillHeight: true
-                 }
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
         }
     }
 
@@ -488,13 +505,13 @@ Page {
             enabled: nameText.text.length > 0 && ( dueDateText.text.length === 0 || isValidDate(dueDateText.text)) && ( dueTimeText.text.length === 0 || isValidTime(dueTimeText.text))
             onClicked: {
                 if (isValidDate(dueDateText.text) && isValidTime(dueTimeText.text)) {
-                    taskDueDate = combineDateAndTime(dueDateText.text, dueTimeText.text )
+                    taskDueDateTime = combineDateAndTime(dueDateText.text, dueTimeText.text )
                 } else if (isValidDate(dueDateText.text)) {
-                      taskDueDate = combineDateAndTime(dueDateText.text, "23:59" )
+                    taskDueDateTime = combineDateAndTime(dueDateText.text, "23:59" )
                 }
 
 
-                addTask(nameText.text, descriptionText.text, taskPriority, taskDueDate)
+                addTask(nameText.text, descriptionText.text, taskPriority, taskDueDateTime)
                 popPage()
             }
 
@@ -530,6 +547,7 @@ Page {
 
 
     function isValidDate(dateString) {
+        root.isCurrentDate = false
         // Ожидаем формат dd:MM:yyyy
         var regex = /^(\d{2}).(\d{2}).(\d{4})$/
         var match = dateString.match(regex)
@@ -551,25 +569,26 @@ Page {
             return false // Неверная дата (например, 31 февраля)
         }
         var now = new Date()
-        var currentDay = now.getDay()
+        var currentDay = now.getDate()
         var currentMonth = now.getMonth()
         var currentYear = now.getFullYear()
 
-        day = inputDate.getDay()
+        day = inputDate.getDate()
         month = inputDate.getMonth()
         year = inputDate.getFullYear()
 
-        console.log(inputDate)
-        console.log(day)
 
-        console.log(now)
-        console.log(currentDay)
         if (year < currentYear) return false
         if (year === currentYear && month < currentMonth) return false
+        console.log(inputDate+" "+now)
+        console.log(day+" "+currentDay)
+        console.log(month+" "+currentMonth)
+        console.log(year+" "+currentYear)
         if (year === currentYear && month === currentMonth && day < currentDay) return false
         if (year === currentYear && month === currentMonth && day === currentDay) root.isCurrentDate = true
         return true
     }
+
 
     function isValidTime(timeString, dateString) {
 
@@ -585,11 +604,8 @@ Page {
         if (hours < 0 || hours > 23) return false
         if (minutes < 0 || minutes > 59) return false
 
-        // Опционально: проверить, что время не раньше текущего
-        console.log(isCurrentDate)
-        if (!isCurrentDate) return true
-        console.log(isCurrentDate)
 
+        if (!isCurrentDate) return true
         var now = new Date()
         var currentHours = now.getHours()
         var currentMinutes = now.getMinutes()
@@ -625,6 +641,32 @@ Page {
         }
 
         return dateTime;
+    }
+
+
+    function isoToDateFormat(isoString) {
+        if (!isoString) return ""
+
+        var date = new Date(isoString)
+        if (isNaN(date.getTime())) return ""
+
+        var day = ("0" + date.getDate()).slice(-2)
+        var month = ("0" + (date.getMonth() + 1)).slice(-2)  // Месяцы от 0
+        var year = date.getFullYear()
+
+        return day + "." + month + "." + year
+    }
+
+    function isoToTimeFormat(isoString) {
+        if (!isoString) return ""
+
+        var date = new Date(isoString)
+        if (isNaN(date.getTime())) return ""
+
+        var hours = ("0" + date.getHours()).slice(-2)
+        var minutes = ("0" + date.getMinutes()).slice(-2)
+
+        return hours + ":" + minutes
     }
 
     Keys.onEscapePressed: {
