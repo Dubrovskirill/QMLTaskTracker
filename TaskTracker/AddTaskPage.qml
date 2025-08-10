@@ -17,11 +17,7 @@ Page {
         color: window.bgColor
     }
 
-    function syncFieldsToUI() {
-        nameText.text = taskName
-        descriptionText.text = taskDescription
-        taskPriority = taskPriority
-    }
+
     signal addTask(string name, string description, int priority)
     signal editTask(int row, string name, string description, int priority)
 

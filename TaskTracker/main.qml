@@ -105,12 +105,12 @@ ApplicationWindow {
             id: addTaskPage
             Connections {
                 target: addTaskPage
-                function onAddTask(name, description, priority) {
-                    taskModel.addTaskFromStrings(name, description, priority)
-                }
-                function onEditTask(row,name, description, priority) {
-                    taskModel.updateTask(row,name, description, priority)
-                }
+                //                function onAddTask(name, description, priority) {
+                //                    taskModel.addTaskFromStrings(name, description, priority)
+                //                }
+                //                function onEditTask(row,name, description, priority) {
+                //                    taskModel.updateTask(row,name, description, priority)
+                //                }
             }
         }
     }
@@ -120,6 +120,12 @@ ApplicationWindow {
 
         InfoTaskPage {
             id: infoTaskPage
+            Connections {
+                target: infoTaskPage
+                function onAddTask(name, description, priority, dueDate) {
+                    taskModel.addTaskFromStrings(name, description, priority, dueDate)
+                }
+            }
 
         }
     }

@@ -97,9 +97,9 @@ SwipeDelegate {
             root.clicked(model.name)
             console.log("Клик по задаче:", model.name, "Индекс:", index)
             stackView.push(infoTaskPageComponent, {
-                               taskName: model.name,
-                               taskDescription: model.description,
-                               taskPriority: model.priority,
+                              // taskName: model.name,
+                               //taskDescription: model.description,
+                              // taskPriority: model.priority,
                                taskIndex: index
                            }
                            )

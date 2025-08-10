@@ -125,12 +125,16 @@ QList<Task*> TaskModel::getTasks() const
     return m_tasks;
 }
 
-void TaskModel::addTaskFromStrings(const QString &name, const QString &description, int priority)
+void TaskModel::addTaskFromStrings(const QString &name, const QString &description, int priority, const QVariant &dueDate)
 {
     Task task(name);
     task.setDescription(description);
     task.setPriority(priority);
     task.setId(++m_lastId);
+    if (dueDate.canConvert<QDateTime>()) {
+        QDateTime dt = dueDate.value<QDateTime>();
+         task.setDueDate(dt);
+    }
     addTask(task); // используем уже существующий метод
 }
 
