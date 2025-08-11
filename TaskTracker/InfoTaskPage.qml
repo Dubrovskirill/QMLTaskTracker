@@ -276,17 +276,21 @@ Page {
                         bottomPadding: 0
                         font.pixelSize: 16
                         color: window.textColor
+                        property bool isFormatting: false
+                        function format(input) {
+                            return input
+                            .replace(/\D/g, '')           // Только цифры
+                            .replace(/^(\d{2})(\d)/, '$1.$2')   // После 2 цифр — точка
+                            .replace(/^(\d{2}\.\d{2})(\d)/, '$1.$2') // После 4 цифр — вторая точка
+                            .substr(0, 10)                // Максимум 10 символов (dd.mm.yyyy)
+                        }
 
                         background: Rectangle {
-
                             color: rectForm.color
-
-
                             border.color:  window.taskColor
-
                             border.width: 1
-
                         }
+
                         function updateBorderColor() {
                             if (!dueDateText.focus && !isValidDate(dueDateText.text) && dueDateText.text.length > 0 && taskStatus===false) {
                                 dueDateText.background.border.color = "red"
@@ -296,21 +300,21 @@ Page {
                                 dueDateText.background.border.color = window.taskColor
                             }
                         }
+
                         onTextChanged: {
                             dueDateText.updateBorderColor()
                             dueTimeText.updateBorderColor()
-
+                            if (isFormatting) return
+                            const formatted = format(text)
+                            if (formatted !== text) {
+                                isFormatting = true
+                                this.text = formatted
+                                isFormatting = false
+                            }
                             console.log(dueDateText.text + " " + dueTimeText.text)
                         }
 
                         onFocusChanged: {
-                            if (dueDateText.focus) {
-                                dueDateText.inputMask = "99.99.9999;"
-                            }
-
-                            if (!dueDateText.focus && dueDateText.text === "..") {
-                                dueDateText.inputMask = ""
-                            }
                             dueDateText.updateBorderColor()
                             dueTimeText.updateBorderColor()
                         }
@@ -338,7 +342,6 @@ Page {
                         property bool showError: false
                         text: taskDueTime
                         selectByMouse: true
-                        //enabled: (isValidDate(dueDateText.text) && dueDateText.text.length !== 0) ? true : false
                         placeholderText: "hh:mm"
                         Layout.fillWidth: true
                         padding: 0
@@ -356,6 +359,14 @@ Page {
 
                             border.width: 1
                         }
+                        property bool isFormatting: false
+                        function format(input) {
+                            return input
+                            .replace(/\D/g, '')
+                            .replace(/^(\d{2})(\d)/, '$1:$2')   // После 2 цифр — точка
+
+                            .substr(0, 5)                // Максимум 10 символов (dd.mm.yyyy)
+                        }
                         function updateBorderColor() {
                             if (!dueTimeText.focus && !isValidTime(dueTimeText.text) && dueTimeText.text.length > 0 && taskStatus===false) {
                                 dueTimeText.background.border.color = "red"
@@ -367,16 +378,16 @@ Page {
                         }
                         onTextChanged: {
                             updateBorderColor()
+                            if (isFormatting) return
+                            const formatted = format(text)
+                            if (formatted !== text) {
+                                isFormatting = true
+                                this.text = formatted
+                                isFormatting = false
+                            }
                         }
 
                         onFocusChanged: {
-                            if (dueTimeText.focus) {
-                                dueTimeText.inputMask = "99:99;"
-                            }
-
-                            if (!dueTimeText.focus && dueTimeText.text === ":") {
-                                dueTimeText.inputMask = ""
-                            }
                             updateBorderColor()
 
                         }
@@ -411,12 +422,12 @@ Page {
             anchors.fill: parent
             anchors.margins: 15
             spacing: 17
-           RowLayout{
-               Layout.fillWidth: true
-               spacing: 20
+            RowLayout{
+                Layout.fillWidth: true
+                spacing: 20
                 Label {
                     id: lblStatus
-                   // Layout.fillWidth: true
+                    // Layout.fillWidth: true
                     function currentStatus(status) {
                         if (status){
                             rectStatus.color = "green"

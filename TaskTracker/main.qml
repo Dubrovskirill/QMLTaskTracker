@@ -108,22 +108,15 @@ ApplicationWindow {
                 }
 
                 function currentStatus(status) {
-                    if (status) {
-                        return "green"
-                    }
+                    if (status) return "transparent"
 
                     var dueDateStr = isoToDateTimeFormat(model.dueDate)
-                    if (!dueDateStr) return "blue"  // нет срока — "в процессе"
+                    if (!dueDateStr) return "transparent"
 
                     var current = transDate(dueDateStr)
-                    if (!current) return "blue"     // не удалось распарсить
+                    if (!current) return "transparent"
 
-                    var now = new Date()
-                    if (now > current) {
-                        return "red"  // просрочено
-                    }
-
-                    return "blue"  // в процессе
+                    return new Date() > current ? "red" : "transparent"
                 }
 
                 function transDate(dateTimeStr) {
