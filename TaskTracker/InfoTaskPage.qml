@@ -288,7 +288,7 @@ Page {
 
                         }
                         function updateBorderColor() {
-                            if (!dueDateText.focus && !isValidDate(dueDateText.text) && dueDateText.text.length > 0) {
+                            if (!dueDateText.focus && !isValidDate(dueDateText.text) && dueDateText.text.length > 0 && taskStatus===false) {
                                 dueDateText.background.border.color = "red"
                             } else if (dueDateText.focus && dueDateText.text.length === 10 && !isValidDate(dueDateText.text)) {
                                 dueDateText.background.border.color = "red"
@@ -297,8 +297,8 @@ Page {
                             }
                         }
                         onTextChanged: {
-                           dueDateText.updateBorderColor()
-                           dueTimeText.updateBorderColor()
+                            dueDateText.updateBorderColor()
+                            dueTimeText.updateBorderColor()
 
                             console.log(dueDateText.text + " " + dueTimeText.text)
                         }
@@ -357,7 +357,7 @@ Page {
                             border.width: 1
                         }
                         function updateBorderColor() {
-                            if (!dueTimeText.focus && !isValidTime(dueTimeText.text) && dueTimeText.text.length > 0) {
+                            if (!dueTimeText.focus && !isValidTime(dueTimeText.text) && dueTimeText.text.length > 0 && taskStatus===false) {
                                 dueTimeText.background.border.color = "red"
                             } else if (dueTimeText.focus && dueTimeText.text.length === 5 && !isValidTime(dueTimeText.text)) {
                                 dueTimeText.background.border.color = "red"
@@ -402,7 +402,7 @@ Page {
         anchors.topMargin: 20
         anchors.leftMargin: 10
         anchors.rightMargin: 10
-        anchors.bottomMargin: 195
+        anchors.bottomMargin: 235
 
         visible: mode === "add" ? false : true
         radius: 20
@@ -411,17 +411,44 @@ Page {
             anchors.fill: parent
             anchors.margins: 15
             spacing: 17
+           RowLayout{
+               Layout.fillWidth: true
+               spacing: 20
+                Label {
+                    id: lblStatus
+                   // Layout.fillWidth: true
+                    function currentStatus(status) {
+                        if (status){
+                            rectStatus.color = "green"
+                            return "Task is completed"
+                        } else {
+                            var now = new Date()
+                            var current = combineDateAndTime(dueDateText.text, dueTimeText.text )
+                            if (now >= current && dueDateText.text.length !== 0 && dueTimeText.text.length !== 0) {
+                                rectStatus.color = "red"
+                                return "Task is overdue"
+                            }
+                        }
+                        rectStatus.color = "blue"
+                        return "Task in progress"
+                    }
 
-            Label {
-                id: lblStatus
-                Layout.fillWidth: true
-                text: "Status"
-                padding: 0
+                    text: "Status: " + currentStatus(taskStatus)
+                    padding: 0
 
-                color: Qt.darker(window.textColor, 1.5)
-                font.pixelSize: 15
+                    color: Qt.darker(window.textColor, 1.5)
+                    font.pixelSize: 15
 
+                }
+                Rectangle {
+                    id: rectStatus
+                    Layout.fillWidth: true
+                    height: 5
+                    radius: 2
+                    color: "red"
+                }
             }
+
 
             Rectangle {
                 color: "lightgrey"
@@ -643,7 +670,7 @@ Page {
 
     Keys.onEscapePressed: {
 
-        popPage()
+        popPage(mainPage)
 
     }
 }
