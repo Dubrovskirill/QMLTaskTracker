@@ -338,7 +338,7 @@ Page {
                         property bool showError: false
                         text: taskDueTime
                         selectByMouse: true
-                        enabled: (isValidDate(dueDateText.text) && dueDateText.text.length !== 0) ? true : false
+                        //enabled: (isValidDate(dueDateText.text) && dueDateText.text.length !== 0) ? true : false
                         placeholderText: "hh:mm"
                         Layout.fillWidth: true
                         padding: 0
@@ -506,7 +506,7 @@ Page {
                     taskDueDateTime = combineDateAndTime(dueDateText.text, dueTimeText.text )
                 } else if (isValidDate(dueDateText.text)) {
                     taskDueDateTime = combineDateAndTime(dueDateText.text, "23:59" )
-                }
+                } else taskDueDateTime = ""
 
 
                 mode === "add" ? addTask(nameText.text, descriptionText.text, taskPriority, taskDueDateTime)

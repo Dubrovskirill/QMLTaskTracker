@@ -56,15 +56,23 @@ ApplicationWindow {
         }
 
         header: Rectangle{
-            height: 100
-            color: "lightgrey"
+            height: 50
+            color: window.bgColor
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: "Tasks"
+                font.pointSize: 16
+                color: window.textColor
+                anchors.leftMargin: 30
+            }
         }
 
         ListView {
             id: listView
             anchors.fill: parent
             spacing: defMargin
-            anchors.topMargin: defMargin
+           // anchors.topMargin: defMargin
             anchors.bottomMargin: defMargin
             ScrollBar.vertical: ScrollBar {}
             model: taskModel
@@ -78,6 +86,73 @@ ApplicationWindow {
                 name: model.name
                 descr: model.description
                 priority: model.priority === 3 ? "red" : (model.priority === 1 ? "green" : "orange")
+
+                dueDate: isoToDateTimeFormat(model.dueDate)
+
+                statusColor: currentStatus(model.isCompleted)
+
+
+                function isoToDateTimeFormat(isoString) {
+                    if (!isoString) return ""
+
+                    var date = new Date(isoString)
+                    if (isNaN(date.getTime())) return ""
+
+                    var day = ("0" + date.getDate()).slice(-2)
+                    var month = ("0" + (date.getMonth() + 1)).slice(-2)  // Месяцы от 0
+                    var year = date.getFullYear()
+                    var hours = ("0" + date.getHours()).slice(-2)
+                    var minutes = ("0" + date.getMinutes()).slice(-2)
+
+                    return day + "." + month + "." + year + " " + hours + ":" + minutes
+                }
+
+                function currentStatus(status) {
+                    if (status) {
+                        return "green"
+                    }
+
+                    var dueDateStr = isoToDateTimeFormat(model.dueDate)
+                    if (!dueDateStr) return "blue"  // нет срока — "в процессе"
+
+                    var current = transDate(dueDateStr)
+                    if (!current) return "blue"     // не удалось распарсить
+
+                    var now = new Date()
+                    if (now > current) {
+                        return "red"  // просрочено
+                    }
+
+                    return "blue"  // в процессе
+                }
+
+                function transDate(dateTimeStr) {
+                    if (!dateTimeStr || typeof dateTimeStr !== "string") return null
+
+                    var parts = dateTimeStr.trim().split(" ")
+                    if (parts.length !== 2) return null
+
+                    var datePart = parts[0]
+                    var timePart = parts[1]
+
+                    var dateParts = datePart.split(".")
+                    var timeParts = timePart.split(":")
+
+                    if (dateParts.length !== 3 || timeParts.length !== 2) return null
+
+                    var day = parseInt(dateParts[0], 10)
+                    var month = parseInt(dateParts[1], 10) - 1
+                    var year = parseInt(dateParts[2], 10)
+                    var hours = parseInt(timeParts[0], 10)
+                    var minutes = parseInt(timeParts[1], 10)
+
+                    if (isNaN(day) || isNaN(month) || isNaN(year) || isNaN(hours) || isNaN(minutes)) {
+                        return null
+                    }
+
+                    var dateTime = new Date(year, month, day, hours, minutes)
+                    return isNaN(dateTime.getTime()) ? null : dateTime
+                }
 
 
                 Connections {

@@ -11,6 +11,10 @@ SwipeDelegate {
     property alias priority: priorityIndicator.color
     property alias backgroundColor: rectTask.color
     property alias textColor: lblName.color
+    property alias dueDate: lblDateTime.text
+
+    property alias statusColor: rectStatus.color
+    property bool isDueDate: dueDate === "" ? false: true
     height: parent.height
     width: parent.width
     padding: 0
@@ -70,8 +74,9 @@ SwipeDelegate {
 
         Rectangle {
             id: rectLimiter
+            visible: isDueDate
             height: parent.height
-            width: 150
+            width: 170
             anchors.right : parent.right
             color: "transparent"
 
@@ -81,12 +86,31 @@ SwipeDelegate {
                 color: Qt.darker(textColor, 2)
                 font.pixelSize: 16
                 anchors.top: parent.top
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.left: parent.left
                 anchors.topMargin: 10
-
-
-
             }
+            Text {
+                id: lblDateTime
+                color: Qt.darker(textColor, 2)
+                font.pixelSize: 16
+                anchors.top: lblDueDate.bottom
+                anchors.left: parent.left
+                anchors.topMargin: 10
+            }
+            Rectangle {
+                id: rectStatus
+                //height: 10
+                //width: 20
+                radius: 5
+                anchors.top: lblDateTime.top
+                anchors.bottom: lblDateTime.bottom
+                anchors.left: lblDateTime.right
+                anchors.right: parent.right
+                //anchors.topMargin: 10
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+            }
+
         }
 
 
@@ -120,6 +144,21 @@ SwipeDelegate {
             anchors.rightMargin: 20
         }
     }
+    swipe.left : Rectangle {
+        width: parent.width
+        height: parent.height
+        color: "green"
+
+
+        Label {
+            text: "Completed"
+            color: textColor
+            font.pixelSize: 16
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 20
+        }
+    }
     swipe.transition: Transition {
         NumberAnimation { properties: "x"; duration: 150 }
     }
@@ -128,8 +167,13 @@ SwipeDelegate {
             root.requestDelete(index)
             console.log("Задача удалена при полном свайпе:", model.name)
         }
+        if (swipe.position > 0) {
+           // root.requestDelete(index)
+            console.log("Задача выполнена", model.name)
+        }
         root.swipe.close() // Закрываем свайп после завершения
     }
+
 
 }
 
